@@ -76,7 +76,7 @@ class NetworkGame(Game):
     def join_AI_player(self, player): #Takes input an object of NetworkPlayer to add to the game. Useful in adding already established AI's to a new game.
         if len(self.players) < 6:
         	self.players.append(player)
-        	return {"token": player_token, "alias": player_token}
+        	return {"token": player.token, "alias": player.token}
         else:
         	return {"error": "Game is full. Can't add AI player"}
 
@@ -103,6 +103,15 @@ class NetworkGame(Game):
                 return player
         return None
 
+    def drawable(self):
+        active_players = sum(map(lambda x: x.active, self.players))
+        if not len(self.deck.main_pile) or active_players is 1:
+            return False 
+        return True
+
+    def active_count(self):
+        return sum(map(lambda x: x.active, self.players))
+
     def _broadcast_message(self, message, typ='NORMAL'):
         queue = self.global_message_queue if typ == 'NORMAL' else self.score_queue
         for player in self.players:
@@ -110,6 +119,8 @@ class NetworkGame(Game):
 
     def evaluate(self, state, info):
         if state is State.GAME_BEGIN:
+            for player in self.players:
+                player.score=0
             self.log_file.write("NG/\n")
             self.log_file.write("Round,Type,Player,Move/Score,TopCard(BeforeMove),PlayerHand(AfterMove)\n")
             return None, State.ROUND_BEGIN
@@ -221,7 +232,7 @@ class NetworkGame(Game):
     def step(self, info):
         if self.state is not State.GAME_END:
             prompt, new_state = self.evaluate(self.state, info)
-            print(f"{self.game_id} stepping from {str(self.state)} to {str(new_state)}")
+            #print(f"{self.game_id} stepping from {str(self.state)} to {str(new_state)}")
             self.state = new_state
             return self.get_info(prompt)
         else:
