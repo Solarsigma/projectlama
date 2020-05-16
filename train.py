@@ -189,6 +189,9 @@ if __name__ == "__main__":
                     # update_reward(game.turn.hand,game.deck.discard_pile[-1])
                     action1 = None
 
+                    if xp[players.index(game.turn)]:
+                        update_reward(game.turn.hand[:], game.deck.discard_pile[-1], xp[players.index(game.turn)])
+
                     if game.turn.active:
                         action1 = getActionOpponent(game , xp[players.index(game.turn)])
                     

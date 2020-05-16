@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 _ = game.step(action)
             curr_state = game.state
 
-        if players[0].score < players[1].score:
+        if players[0].score == min([player.score for player in players]):
             wins += 1
 
     print("Win % =",wins/no_of_games*100)
